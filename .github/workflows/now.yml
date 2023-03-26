@@ -49,29 +49,7 @@ jobs:
       env:
         OUR_GITHUB_PAT: ${{ secrets.GIT_PAT }}
 
-  #  - name: Deploy Nightly Builds
-  #    uses: garygrossgarten/github-action-scp@release
-  #    with:
-  #      local: products
-  #      remote: Library/Web/chowdsp/nightly_plugins
-  #      host: ccrma-gate.stanford.edu
-  #      username: jatin
-  #      password: ${{ secrets.CCRMA_PASS }}
-
-  #  - name: Send email notification
-  #    if: always()
-  #    uses: dawidd6/action-send-mail@v2
-  #    with:
-  #      server_address: smtp.gmail.com
-  #      server_port: 465
-  #      username: chowdsp
-  #      password: ${{ secrets.GMAIL_PASS }}
-  #      subject: "ChowDSP ${{ github.job }} completed with status: ${{ job.status }}"
-  #      body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
-  #      to: chowdsp@gmail.com
-  #      from: ChowDSP Nightly Release Pipeline (Windows)
-  
-  - name: Upload BYOD build process Artifacts
+    - name: Upload BYOD build process Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: byob-artifact
@@ -165,11 +143,11 @@ jobs:
 #        to: chowdsp@gmail.com
 #        from: ChowDSP Nightly Release Pipeline (MacOS)
 
-- name: Upload BYOD build process Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: byob-artifact
-        path: products # or path/to/artifact
+      - name: Upload BYOD build process Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: byob-artifact
+          path: products # or path/to/artifact
 
 
   linux_release:
@@ -242,8 +220,8 @@ jobs:
  #       from: ChowDSP Nightly Release Pipeline (Linux)
  
  
-    - name: Upload BYOD build process Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: byob-artifact
-        path: products # or path/to/artifact
+      - name: Upload BYOD build process Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: byob-artifact
+          path: products # or path/to/artifact
