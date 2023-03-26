@@ -1,0 +1,249 @@
+name: Nightly
+
+on:
+  push:
+    branches:
+    - main
+
+  workflow_dispatch:
+
+jobs:
+  windows_release:
+    name: Windows Nightly Release
+ #   if: contains(toJson(github.event.commits), 'Update Nightlies')
+    runs-on: windows-2019
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Install SDKs
+      uses: actions/checkout@v2
+      with:
+        repository: smallbutfine/Plugins_SDKs
+        path: SDKs
+        token: ${{ secrets.GIT_PAT }}
+
+    - name: Get latest CMake
+      uses: lukka/get-cmake@latest
+
+    - name: Choco Install PuTTy
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: install putty.portable
+
+    - name: Choco Install Inno Setup
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: install innosetup
+
+    - name: Setup Products directory
+      run: mkdir products
+
+    # - name: Setup debug session
+    #   uses: mxschmitt/action-tmate@v3
+
+    - name: Build BYOD
+ #     if: contains(toJson(github.event.commits), 'BYOD')
+      run: bash plugins/BYOD/win_build.sh
+      env:
+        OUR_GITHUB_PAT: ${{ secrets.GIT_PAT }}
+
+  #  - name: Deploy Nightly Builds
+  #    uses: garygrossgarten/github-action-scp@release
+  #    with:
+  #      local: products
+  #      remote: Library/Web/chowdsp/nightly_plugins
+  #      host: ccrma-gate.stanford.edu
+  #      username: jatin
+  #      password: ${{ secrets.CCRMA_PASS }}
+
+  #  - name: Send email notification
+  #    if: always()
+  #    uses: dawidd6/action-send-mail@v2
+  #    with:
+  #      server_address: smtp.gmail.com
+  #      server_port: 465
+  #      username: chowdsp
+  #      password: ${{ secrets.GMAIL_PASS }}
+  #      subject: "ChowDSP ${{ github.job }} completed with status: ${{ job.status }}"
+  #      body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
+  #      to: chowdsp@gmail.com
+  #      from: ChowDSP Nightly Release Pipeline (Windows)
+  
+  - name: Upload BYOD build process Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: byob-artifact
+        path: products # or path/to/artifact
+
+
+  macos_release:
+    name: Mac Nightly Release
+ #   if: contains(toJson(github.event.commits), 'Update Nightlies')
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Install SDKs
+      uses: actions/checkout@v2
+      with:
+        repository: smallbutfine/Plugins_SDKs
+        path: SDKs
+        token: ${{ secrets.GIT_PAT }}
+
+    - name: Get latest CMake
+      uses: lukka/get-cmake@latest
+
+    - name: Download Packages installer build tool
+      run: wget http://s.sudre.free.fr/Software/files/Packages.dmg
+
+    - name: Mount Packages image
+      run: hdiutil attach Packages.dmg
+
+    - name: Install Packages
+      run: sudo installer -pkg /Volumes/Packages\ 1.2.10/Install\ Packages.pkg -target /
+
+    - name: Install npm packages
+      run: npm install -g git+https://github.com/jatinchowdhury18/notarize-cli
+
+    - name: Install putty
+      run: brew install putty
+
+ #   - name: Setup temporary keychain and add installer signing certificate
+ #     uses: apple-actions/import-codesign-certs@v1
+ #     with:
+ #       keychain-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
+ #       p12-file-base64: ${{ secrets.MAC_CERTIFICATES_BASE64 }}
+ #       p12-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
+
+  #  - name: Setup temporary keychain and add installer signing certificate
+  #    uses: apple-actions/import-codesign-certs@v1
+  #    with:
+  #      keychain-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
+  #      p12-file-base64: ${{ secrets.MAC_INSTALLER_CERTIFICATES_BASE64 }}
+  #      p12-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
+  #      create-keychain: 'false'
+
+    - name: Setup Products directory
+      run: mkdir products
+
+    # - name: Setup debug session
+    #   uses: mxschmitt/action-tmate@v3
+
+    - name: Build BYOD
+      if: contains(toJson(github.event.commits), 'BYOD')
+      run: bash plugins/BYOD/mac_build.sh
+      env:
+ #       TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+ #       INSTALLER_PASS: ${{ secrets.MAC_INSTALLER_PASS }}
+ #       CCRMA_PASS: ${{ secrets.CCRMA_PASS }}
+        OUR_GITHUB_PAT: ${{ secrets.GIT_PAT }}
+
+ 
+#    - name: Deploy Nightly Builds
+#      uses: garygrossgarten/github-action-scp@release
+#      with:
+#        local: products
+#        remote: Library/Web/chowdsp/nightly_plugins
+#        host: ccrma-gate.stanford.edu
+#        username: jatin
+#        password: ${{ secrets.CCRMA_PASS }}
+
+#    - name: Send email notification
+#      if: always()
+#      uses: dawidd6/action-send-mail@v2
+#      with:
+#        server_address: smtp.gmail.com
+#        server_port: 465
+#        username: chowdsp
+#        password: ${{ secrets.GMAIL_PASS }}
+#        subject: "ChowDSP ${{ github.job }} completed with status: ${{ job.status }}"
+#        body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
+#        to: chowdsp@gmail.com
+#        from: ChowDSP Nightly Release Pipeline (MacOS)
+
+- name: Upload BYOD build process Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: byob-artifact
+        path: products # or path/to/artifact
+
+
+  linux_release:
+    name: Linux Nightly Release
+#    if: contains(toJson(github.event.commits), 'Update Nightlies')
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: System Info
+      run: more /etc/os-release
+
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Install SDKs
+      uses: actions/checkout@v2
+      with:
+        repository: smallbutfine/Plugins_SDKs
+        path: SDKs
+        token: ${{ secrets.GIT_PAT }}
+
+    - name: Get latest CMake
+      uses: lukka/get-cmake@latest
+
+    - name: Install Linux Deps
+      if: runner.os == 'Linux'
+      run: |
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
+        sudo apt-add-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main"
+        sudo apt update
+        sudo apt install clang-12 -y
+        sudo apt-get update
+        sudo apt install libasound2-dev libcurl4-openssl-dev libx11-dev libxinerama-dev libxext-dev libfreetype6-dev libwebkit2gtk-4.0-dev libglu1-mesa-dev libjack-jackd2-dev lv2-dev
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 9
+
+    - name: Setup Products directory
+      run: mkdir products
+
+   
+    # - name: Setup debug session
+    # uses: mxschmitt/action-tmate@v3
+
+    - name: Build BYOD
+#      if: contains(toJson(github.event.commits), 'BYOD')
+      run: bash plugins/BYOD/linux_build.sh
+      env:
+        OUR_GITHUB_PAT: ${{ secrets.GIT_PAT }}
+
+ #   - name: Deploy Nightly Builds
+ #     uses: garygrossgarten/github-action-scp@release
+ #     with:
+ #       local: products
+ #       remote: Library/Web/chowdsp/nightly_plugins
+ #       host: ccrma-gate.stanford.edu
+ #       username: jatin
+ #       password: ${{ secrets.CCRMA_PASS }}
+
+ #   - name: Send email notification
+ #     if: always()
+ #     uses: dawidd6/action-send-mail@v2
+ #     with:
+ #       server_address: smtp.gmail.com
+ #       server_port: 465
+ #       username: chowdsp
+ #       password: ${{ secrets.GMAIL_PASS }}
+ #       subject: "ChowDSP ${{ github.job }} completed with status: ${{ job.status }}"
+ #       body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
+ #       to: chowdsp@gmail.com
+ #       from: ChowDSP Nightly Release Pipeline (Linux)
+ 
+ 
+    - name: Upload BYOD build process Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: byob-artifact
+        path: products # or path/to/artifact
