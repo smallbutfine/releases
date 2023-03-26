@@ -22,7 +22,7 @@ jobs:
       with:
         repository: smallbutfine/Plugins_SDKs
         path: SDKs
-        token: ${{ secrets.OUR_GITHUB_PAT }}
+        token: ${{ secrets.GIT_PAT }}
 
     - name: Get latest CMake
       uses: lukka/get-cmake@latest
