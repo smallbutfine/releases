@@ -80,61 +80,61 @@ git push -u https://jatinchowdhury18:$pat@github.com/Chowdhury-DSP/releases.git 
 sleep 60m
 
 password=$(cat ~/ccrma_pass)
-ssh_cmd="sshpass -p $password ssh -q -o StrictHostKeyChecking=no jatin@ccrma-gate.stanford.edu"
-scp_cmd="sshpass -p $password scp -o StrictHostKeyChecking=no jatin@ccrma-gate.stanford.edu:"
-ssh_dir="~/Library/Web/chowdsp/nightly_plugins"
-nightly_dir=~/web/chowdspweb/nightly_plugins
+# ssh_cmd="sshpass -p $password ssh -q -o StrictHostKeyChecking=no jatin@ccrma-gate.stanford.edu"
+#scp_cmd="sshpass -p $password scp -o StrictHostKeyChecking=no jatin@ccrma-gate.stanford.edu:"
+#ssh_dir="~/Library/Web/chowdsp/nightly_plugins"
+#nightly_dir=~/web/chowdspweb/nightly_plugins
 
-for p in "${plugins_to_update[@]}"; do
-    update=1
-    if $ssh_cmd stat $ssh_dir/$p*-Mac* \> /dev/null 2\>\&1
-        then
-            echo "Nightly update found for $p Mac"
-            rm -f $nightly_dir/$p*-Mac*
-            $scp_cmd$ssh_dir/$p*-Mac* $nightly_dir/
-            $ssh_cmd "rm $ssh_dir/$p*-Mac*"
-            update=0
-        else
-            echo "No Nightly update found for $p Mac"
-    fi
+#for p in "${plugins_to_update[@]}"; do
+#    update=1
+ #   if $ssh_cmd stat $ssh_dir/$p*-Mac* \> /dev/null 2\>\&1
+ #       then
+ #           echo "Nightly update found for $p Mac"
+ #           rm -f $nightly_dir/$p*-Mac*
+ #           $scp_cmd$ssh_dir/$p*-Mac* $nightly_dir/
+ #           $ssh_cmd "rm $ssh_dir/$p*-Mac*"
+ #           update=0
+ #      else
+ #           echo "No Nightly update found for $p Mac"
+ #   fi
 
-    if $ssh_cmd stat $ssh_dir/$p*-Win* \> /dev/null 2\>\&1
-        then
-            echo "Nightly update found for $p Win"
-            rm -f $nightly_dir/$p*-Win*
-            $scp_cmd$ssh_dir/$p*-Win* $nightly_dir/
-            $ssh_cmd "rm $ssh_dir/$p*-Win*"
-            update=0
-        else
-            echo "No Nightly update found for $p Win"
-    fi
+ #   if $ssh_cmd stat $ssh_dir/$p*-Win* \> /dev/null 2\>\&1
+ #       then
+ #           echo "Nightly update found for $p Win"
+ #           rm -f $nightly_dir/$p*-Win*
+ #           $scp_cmd$ssh_dir/$p*-Win* $nightly_dir/
+ #           $ssh_cmd "rm $ssh_dir/$p*-Win*"
+ #           update=0
+ #       else
+ #           echo "No Nightly update found for $p Win"
+ #   fi
 
-    if $ssh_cmd stat $ssh_dir/$p*-Linux* \> /dev/null 2\>\&1
-        then
-            echo "Nightly update found for $p Linux"
-            rm -f $nightly_dir/$p*-Linux*
-            $scp_cmd$ssh_dir/$p*-Linux* $nightly_dir/
-            $ssh_cmd "rm $ssh_dir/$p*-Linux*"
-            update=0
-        else
-            echo "No Nightly update found for $p Linux"
-    fi
+ #   if $ssh_cmd stat $ssh_dir/$p*-Linux* \> /dev/null 2\>\&1
+ #       then
+ #           echo "Nightly update found for $p Linux"
+ ä           rm -f $nightly_dir/$p*-Linux*
+ ä           $scp_cmd$ssh_dir/$p*-Linux* $nightly_dir/
+ ä           $ssh_cmd "rm $ssh_dir/$p*-Linux*"
+ ä           update=0
+ ä       else
+ ä           echo "No Nightly update found for $p Linux"
+ #   fi
 
     if [[ "$update" -eq 0 ]]; then
         echo "Latest build created on $(date)" > $nightly_dir/${p}_Info.txt
         win_exe=$(cd $nightly_dir && ls $p*-Win-64bit*)
-	if [[ "$p" != "ChowMultiTool" ]]; then
-            win32_exe=$(cd $nightly_dir && ls $p*-Win-32bit*)
-	fi
+#	if [[ "$p" != "ChowMultiTool" ]]; then
+#            win32_exe=$(cd $nightly_dir && ls $p*-Win-32bit*)
+#	fi
         mac_dmg=$(cd $nightly_dir && ls $p*-Mac*)
         lin_deb=$(cd $nightly_dir && ls $p*-Linux*)
 
-        sed -i -e "s/${p}.*Win-64bit.*.exe/$win_exe/g" ~/web/chowdspweb/nightly.js
-	if [[ "$p" != "ChowMultiTool" ]]; then
-            sed -i -e "s/${p}.*Win-32bit.*.exe/$win32_exe/g" ~/web/chowdspweb/nightly.js
-	fi
-        sed -i -e "s/${p}.*Mac.*.dmg/$mac_dmg/g" ~/web/chowdspweb/nightly.js
-        sed -i -e "s/${p}.*Linux.*.deb/$lin_deb/g" ~/web/chowdspweb/nightly.js
+#        sed -i -e "s/${p}.*Win-64bit.*.exe/$win_exe/g" ~/web/chowdspweb/nightly.js
+#	if [[ "$p" != "ChowMultiTool" ]]; then
+#            sed -i -e "s/${p}.*Win-32bit.*.exe/$win32_exe/g" ~/web/chowdspweb/nightly.js
+#	fi
+#        sed -i -e "s/${p}.*Mac.*.dmg/$mac_dmg/g" ~/web/chowdspweb/nightly.js
+#        sed -i -e "s/${p}.*Linux.*.deb/$lin_deb/g" ~/web/chowdspweb/nightly.js
     fi
 done
 
