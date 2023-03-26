@@ -1,4 +1,4 @@
-name: Nightly
+name: Now
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   windows_release:
-    name: Windows Nightly Release
+    name: Windows Now Release
  #   if: contains(toJson(github.event.commits), 'Update Nightlies')
     runs-on: windows-2019
 
@@ -57,7 +57,7 @@ jobs:
 
 
   macos_release:
-    name: Mac Nightly Release
+    name: Mac Now Release
  #   if: contains(toJson(github.event.commits), 'Update Nightlies')
     runs-on: macos-latest
 
@@ -151,7 +151,7 @@ jobs:
 
 
   linux_release:
-    name: Linux Nightly Release
+    name: Linux Now Release
 #    if: contains(toJson(github.event.commits), 'Update Nightlies')
     runs-on: ubuntu-22.04
 
