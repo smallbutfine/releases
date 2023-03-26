@@ -17,15 +17,15 @@ git checkout "$hash"
 git submodule update --init --recursive
 
 # Clone add-on modules
-USERNAME="jatinchowdhury18"
-PASSWORD="$OUR_GITHUB_PAT"
-add_ons_repo="https://github.com/Chowdhury-DSP/BYOD-add-ons"
+#USERNAME="jatinchowdhury18"
+#PASSWORD="$OUR_GITHUB_PAT"
+#add_ons_repo="https://github.com/Chowdhury-DSP/BYOD-add-ons"
 
-add_ons_repo_with_pass="${add_ons_repo:0:8}$USERNAME:$PASSWORD@${add_ons_repo:8}"
-git clone $add_ons_repo_with_pass modules/BYOD-add-ons
+#add_ons_repo_with_pass="${add_ons_repo:0:8}$USERNAME:$PASSWORD@${add_ons_repo:8}"
+#git clone $add_ons_repo_with_pass modules/BYOD-add-ons
 
 # set up SDK paths
-sed -i -e "s~# juce_set_vst2_sdk_path.*~juce_set_vst2_sdk_path(${SDK_PATH}/VST2_SDK)~" CMakeLists.txt
+#sed -i -e "s~# juce_set_vst2_sdk_path.*~juce_set_vst2_sdk_path(${SDK_PATH}/VST2_SDK)~" CMakeLists.txt
 
 # build Win64
 cmake -Bbuild -GXcode -DBYOD_BUILD_ADD_ON_MODULES=ON -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="Developer ID Application" \
@@ -46,7 +46,7 @@ cp -R "build/${name}_artefacts/Release/VST/${name}.vst" "bin/Mac/${name}.vst"
 cp -R "build/${name}_artefacts/Release/VST3/${name}.vst3" "bin/Mac/${name}.vst3"
 cp -R "build/${name}_artefacts/Release/CLAP/${name}.clap" "bin/Mac/${name}.clap"
 cp -R "build/${name}_artefacts/Release/AU/${name}.component" "bin/Mac/${name}.component"
-echo y | pscp -pw "$CCRMA_PASS" -r jatin@ccrma-gate.stanford.edu:/user/j/jatin/aax_builds/Mac/${name}.aaxplugin "bin/Mac/${name}.aaxplugin"
+#echo y | pscp -pw "$CCRMA_PASS" -r jatin@ccrma-gate.stanford.edu:/user/j/jatin/aax_builds/Mac/${name}.aaxplugin "bin/Mac/${name}.aaxplugin"
 
 # create installer
 echo "Creating installer..."
@@ -72,8 +72,8 @@ productsign -s "$TEAM_ID" build/BYOD.pkg $pkg_dir/BYOD-signed.pkg
 
 echo "Notarizing installer package..."
 npx notarize-cli --file $pkg_dir/BYOD-signed.pkg \
-    --bundle-id com.chowdsp.BYOD \
-    --username chowdsp@gmail.com \
+    --bundle-id com.smallbutfine.BYOD \
+    --username martin.haverland@gmx.de \
     --password "$INSTALLER_PASS" \
     --asc-provider "$TEAM_ID"
 
