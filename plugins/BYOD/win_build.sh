@@ -4,7 +4,7 @@ set -e
 
 DIR=$(dirname "${BASH_SOURCE[0]}")
 SDK_PATH="$(pwd)/SDKs"
-VST_SDK="D:${SDK_PATH:2}/VST2_SDK"
+#VST_SDK="D:${SDK_PATH:2}/VST2_SDK"
 ASIO_SDK="D:${SDK_PATH:2}/ASIO_SDK"
 
 # clone git repo
@@ -19,22 +19,22 @@ git checkout "$hash"
 git submodule update --init --recursive
 
 # Clone add-on modules
-USERNAME="jatinchowdhury18"
-PASSWORD="$OUR_GITHUB_PAT"
-add_ons_repo="https://github.com/Chowdhury-DSP/BYOD-add-ons"
+#USERNAME="jatinchowdhury18"
+#PASSWORD="$OUR_GITHUB_PAT"
+#add_ons_repo="https://github.com/Chowdhury-DSP/BYOD-add-ons"
 
-add_ons_repo_with_pass="${add_ons_repo:0:8}$USERNAME:$PASSWORD@${add_ons_repo:8}"
-git clone $add_ons_repo_with_pass modules/BYOD-add-ons
+#add_ons_repo_with_pass="${add_ons_repo:0:8}$USERNAME:$PASSWO#RD@${add_ons_repo:8}"
+#git clone $add_ons_repo_with_pass modules/BYOD-add-ons
 
 # set up SDK paths
-sed -i -e "s~# juce_set_vst2_sdk_path.*~juce_set_vst2_sdk_path(${VST_SDK})~" CMakeLists.txt
+#sed -i -e "s~# juce_set_vst2_sdk_path.*~juce_set_vst2_sdk_path(${VST_SDK})~" CMakeLists.txt
 
 # build Win64
-cmake -Bbuild -G"Visual Studio 16 2019" -A x64 -DBYOD_BUILD_ADD_ON_MODULES=ON -DBUILD_RELEASE=ON -DASIOSDK_DIR="${ASIO_SDK}"
+cmake -Bbuild -G"Visual Studio 16 2019" -A x64 -DBUILD_RELEASE=ON -DASIOSDK_DIR="${ASIO_SDK}"
 cmake --build build --config Release --parallel 4
 
 # build Win32
-cmake -Bbuild32 -G"Visual Studio 16 2019" -A Win32 -DBYOD_BUILD_ADD_ON_MODULES=ON -DBUILD_RELEASE=ON -DASIOSDK_DIR="${ASIO_SDK}"
+cmake -Bbuild32 -G"Visual Studio 16 2019" -A Win32 -DBUILD_RELEASE=ON -DASIOSDK_DIR="${ASIO_SDK}"
 cmake --build build32 --config Release --parallel 4
 
 # copy builds to bin
