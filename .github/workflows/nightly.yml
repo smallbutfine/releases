@@ -226,3 +226,10 @@ jobs:
  #       body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
  #       to: chowdsp@gmail.com
  #       from: ChowDSP Nightly Release Pipeline (Linux)
+ 
+ 
+    - name: Upload BYOD build process Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: byob-artifact
+        path: products # or path/to/artifact
