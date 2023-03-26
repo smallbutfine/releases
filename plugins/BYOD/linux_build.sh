@@ -17,15 +17,15 @@ git checkout "$hash"
 git submodule update --init --recursive
 
 # Clone add-on modules
-USERNAME="jatinchowdhury18"
-PASSWORD="$OUR_GITHUB_PAT"
-add_ons_repo="https://github.com/Chowdhury-DSP/BYOD-add-ons"
+# USERNAME="smallbutfine"
+# PASSWORD="$OUR_GITHUB_PAT"
+# add_ons_repo="https://github.com/Chowdhury-DSP/BYOD-add-ons"
 
-add_ons_repo_with_pass="${add_ons_repo:0:8}$USERNAME:$PASSWORD@${add_ons_repo:8}"
-git clone $add_ons_repo_with_pass modules/BYOD-add-ons
+# add_ons_repo_with_pass="${add_ons_repo:0:8}$USERNAME:$PASSWORD@${add_ons_repo:8}"
+# git clone $add_ons_repo_with_pass modules/BYOD-add-ons
 
 # build 64-bit
-cmake -Bbuild -DBYOD_BUILD_ADD_ON_MODULES=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_RELEASE=ON
+cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -DBUILD_RELEASE=ON
 cmake --build build --config Release --parallel 4
 
 # create installer
@@ -48,7 +48,7 @@ Source: ${name}
 Package: ${name}
 Version: $version
 Architecture: amd64
-Maintainer: Chowdhury DSP <chowdsp@gmail.com>
+Maintainer: Martin Haverland <martin.haverland@gmx.de>
 Depends: libjack0 | libjack-jackd2-0, libasound2 (>= 1.0.16), libc6 (>= 2.29), libfreetype6 (>= 2.2.1), libgcc-s1 (>= 4.0), libstdc++6 (>= 7)
 Provides: vst-plugin
 Section: sound
@@ -64,9 +64,9 @@ cat <<EOT > "${name}/usr/share/${name}/doc/changelog.Debian"
 ${name} (${version}) stable; urgency=medium
 
   * ${MSG}
-  * For more details see https://github.com/Chowdhury-DSP/BYOD
+  * For more details see https://github.com/smallbutfine/BYOD
   
- -- Chowdhury DSP <chowdsp@gmail.com>  ${DATE}
+ -- Martin Haverland <martin.haverland@gmx.de>  ${DATE}
 EOT
 gzip -9 -n "${name}/usr/share/${name}/doc/changelog.Debian"
 
