@@ -20,7 +20,7 @@ jobs:
     - name: Install SDKs
       uses: actions/checkout@v2
       with:
-        repository: Chowdhury-DSP/Plugins_SDKs
+        repository: smallbutfine/Plugins_SDKs
         path: SDKs
         token: ${{ secrets.OUR_GITHUB_PAT }}
 
@@ -43,64 +43,33 @@ jobs:
     # - name: Setup debug session
     #   uses: mxschmitt/action-tmate@v3
 
-    - name: Build ChowCentaur
-      if: contains(toJson(github.event.commits), 'ChowCentaur')
-      run: bash plugins/ChowCentaur/win_build.sh
-
-    - name: Build ChowTape
-      if: contains(toJson(github.event.commits), 'ChowTape')
-      run: bash plugins/ChowTape/win_build.sh
-      env:
-        CCRMA_PASS: ${{ secrets.CCRMA_PASS }}
-
-    - name: Build ChowMatrix
-      if: contains(toJson(github.event.commits), 'ChowMatrix')
-      run: bash plugins/ChowMatrix/win_build.sh
-      env:
-        CCRMA_PASS: ${{ secrets.CCRMA_PASS }}
-
-    - name: Build ChowPhaser
-      if: contains(toJson(github.event.commits), 'ChowPhaser')
-      run: bash plugins/ChowPhaser/win_build.sh
-
-    - name: Build ChowKick
-      if: contains(toJson(github.event.commits), 'ChowKick')
-      run: bash plugins/ChowKick/win_build.sh
-
     - name: Build BYOD
       if: contains(toJson(github.event.commits), 'BYOD')
       run: bash plugins/BYOD/win_build.sh
       env:
-        CCRMA_PASS: ${{ secrets.CCRMA_PASS }}
-        OUR_GITHUB_PAT: ${{ secrets.OUR_GITHUB_PAT }}
+        OUR_GITHUB_PAT: ${{ secrets.GIT_PAT }}
 
-    - name: Build ChowMultiTool
-      if: contains(toJson(github.event.commits), 'ChowMultiTool')
-      run: bash plugins/ChowMultiTool/win_build.sh
-      env:
-        CCRMA_PASS: ${{ secrets.CCRMA_PASS }}
+  #  - name: Deploy Nightly Builds
+  #    uses: garygrossgarten/github-action-scp@release
+  #    with:
+  #      local: products
+  #      remote: Library/Web/chowdsp/nightly_plugins
+  #      host: ccrma-gate.stanford.edu
+  #      username: jatin
+  #      password: ${{ secrets.CCRMA_PASS }}
 
-    - name: Deploy Nightly Builds
-      uses: garygrossgarten/github-action-scp@release
-      with:
-        local: products
-        remote: Library/Web/chowdsp/nightly_plugins
-        host: ccrma-gate.stanford.edu
-        username: jatin
-        password: ${{ secrets.CCRMA_PASS }}
-
-    - name: Send email notification
-      if: always()
-      uses: dawidd6/action-send-mail@v2
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: chowdsp
-        password: ${{ secrets.GMAIL_PASS }}
-        subject: "ChowDSP ${{ github.job }} completed with status: ${{ job.status }}"
-        body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
-        to: chowdsp@gmail.com
-        from: ChowDSP Nightly Release Pipeline (Windows)
+  #  - name: Send email notification
+  #    if: always()
+  #    uses: dawidd6/action-send-mail@v2
+  #    with:
+  #      server_address: smtp.gmail.com
+  #      server_port: 465
+  #      username: chowdsp
+  #      password: ${{ secrets.GMAIL_PASS }}
+  #      subject: "ChowDSP ${{ github.job }} completed with status: ${{ job.status }}"
+  #      body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
+  #      to: chowdsp@gmail.com
+  #      from: ChowDSP Nightly Release Pipeline (Windows)
 
   macos_release:
     name: Mac Nightly Release
@@ -114,9 +83,9 @@ jobs:
     - name: Install SDKs
       uses: actions/checkout@v2
       with:
-        repository: Chowdhury-DSP/Plugins_SDKs
+        repository: smallbutfine/Plugins_SDKs
         path: SDKs
-        token: ${{ secrets.OUR_GITHUB_PAT }}
+        token: ${{ secrets.GIT_PAT }}
 
     - name: Get latest CMake
       uses: lukka/get-cmake@latest
@@ -136,20 +105,20 @@ jobs:
     - name: Install putty
       run: brew install putty
 
-    - name: Setup temporary keychain and add installer signing certificate
-      uses: apple-actions/import-codesign-certs@v1
-      with:
-        keychain-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
-        p12-file-base64: ${{ secrets.MAC_CERTIFICATES_BASE64 }}
-        p12-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
+ #   - name: Setup temporary keychain and add installer signing certificate
+ #     uses: apple-actions/import-codesign-certs@v1
+ #     with:
+ #       keychain-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
+ #       p12-file-base64: ${{ secrets.MAC_CERTIFICATES_BASE64 }}
+ #       p12-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
 
-    - name: Setup temporary keychain and add installer signing certificate
-      uses: apple-actions/import-codesign-certs@v1
-      with:
-        keychain-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
-        p12-file-base64: ${{ secrets.MAC_INSTALLER_CERTIFICATES_BASE64 }}
-        p12-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
-        create-keychain: 'false'
+  #  - name: Setup temporary keychain and add installer signing certificate
+  #    uses: apple-actions/import-codesign-certs@v1
+  #    with:
+  #      keychain-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
+  #      p12-file-base64: ${{ secrets.MAC_INSTALLER_CERTIFICATES_BASE64 }}
+  #      p12-password: ${{ secrets.MAC_CERTIFICATES_PASS }}
+  #      create-keychain: 'false'
 
     - name: Setup Products directory
       run: mkdir products
@@ -157,81 +126,37 @@ jobs:
     # - name: Setup debug session
     #   uses: mxschmitt/action-tmate@v3
 
-    - name: Build ChowCentaur
-      if: contains(toJson(github.event.commits), 'ChowCentaur')
-      run: bash plugins/ChowCentaur/mac_build.sh
-      env:
-        TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        INSTALLER_PASS: ${{ secrets.MAC_INSTALLER_PASS }}
-
-    - name: Build ChowTape
-      if: contains(toJson(github.event.commits), 'ChowTape')
-      run: bash plugins/ChowTape/mac_build.sh
-      env:
-        TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        INSTALLER_PASS: ${{ secrets.MAC_INSTALLER_PASS }}
-        CCRMA_PASS: ${{ secrets.CCRMA_PASS }}
-
-    - name: Build ChowMatrix
-      if: contains(toJson(github.event.commits), 'ChowMatrix')
-      run: bash plugins/ChowMatrix/mac_build.sh
-      env:
-        TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        INSTALLER_PASS: ${{ secrets.MAC_INSTALLER_PASS }}
-        CCRMA_PASS: ${{ secrets.CCRMA_PASS }}
-
-    - name: Build ChowPhaser
-      if: contains(toJson(github.event.commits), 'ChowPhaser')
-      run: bash plugins/ChowPhaser/mac_build.sh
-      env:
-        TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        INSTALLER_PASS: ${{ secrets.MAC_INSTALLER_PASS }}
-
-    - name: Build ChowKick
-      if: contains(toJson(github.event.commits), 'ChowKick')
-      run: bash plugins/ChowKick/mac_build.sh
-      env:
-        TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        INSTALLER_PASS: ${{ secrets.MAC_INSTALLER_PASS }}
-
     - name: Build BYOD
       if: contains(toJson(github.event.commits), 'BYOD')
       run: bash plugins/BYOD/mac_build.sh
       env:
-        TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        INSTALLER_PASS: ${{ secrets.MAC_INSTALLER_PASS }}
-        CCRMA_PASS: ${{ secrets.CCRMA_PASS }}
-        OUR_GITHUB_PAT: ${{ secrets.OUR_GITHUB_PAT }}
+ #       TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+ #       INSTALLER_PASS: ${{ secrets.MAC_INSTALLER_PASS }}
+ #       CCRMA_PASS: ${{ secrets.CCRMA_PASS }}
+        OUR_GITHUB_PAT: ${{ secrets.GIT_PAT }}
 
-    - name: Build ChowMultiTool
-      if: contains(toJson(github.event.commits), 'ChowMultiTool')
-      run: bash plugins/ChowMultiTool/mac_build.sh
-      env:
-        TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        INSTALLER_PASS: ${{ secrets.MAC_INSTALLER_PASS }}
-        CCRMA_PASS: ${{ secrets.CCRMA_PASS }}
+ 
+#    - name: Deploy Nightly Builds
+#      uses: garygrossgarten/github-action-scp@release
+#      with:
+#        local: products
+#        remote: Library/Web/chowdsp/nightly_plugins
+#        host: ccrma-gate.stanford.edu
+#        username: jatin
+#        password: ${{ secrets.CCRMA_PASS }}
 
-    - name: Deploy Nightly Builds
-      uses: garygrossgarten/github-action-scp@release
-      with:
-        local: products
-        remote: Library/Web/chowdsp/nightly_plugins
-        host: ccrma-gate.stanford.edu
-        username: jatin
-        password: ${{ secrets.CCRMA_PASS }}
-
-    - name: Send email notification
-      if: always()
-      uses: dawidd6/action-send-mail@v2
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: chowdsp
-        password: ${{ secrets.GMAIL_PASS }}
-        subject: "ChowDSP ${{ github.job }} completed with status: ${{ job.status }}"
-        body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
-        to: chowdsp@gmail.com
-        from: ChowDSP Nightly Release Pipeline (MacOS)
+#    - name: Send email notification
+#      if: always()
+#      uses: dawidd6/action-send-mail@v2
+#      with:
+#        server_address: smtp.gmail.com
+#        server_port: 465
+#        username: chowdsp
+#        password: ${{ secrets.GMAIL_PASS }}
+#        subject: "ChowDSP ${{ github.job }} completed with status: ${{ job.status }}"
+#        body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
+#        to: chowdsp@gmail.com
+#        from: ChowDSP Nightly Release Pipeline (MacOS)
 
   linux_release:
     name: Linux Nightly Release
@@ -248,9 +173,9 @@ jobs:
     - name: Install SDKs
       uses: actions/checkout@v2
       with:
-        repository: Chowdhury-DSP/Plugins_SDKs
+        repository: smallbutfine/Plugins_SDKs
         path: SDKs
-        token: ${{ secrets.OUR_GITHUB_PAT }}
+        token: ${{ secrets.GIT_PAT }}
 
     - name: Get latest CMake
       uses: lukka/get-cmake@latest
@@ -270,26 +195,7 @@ jobs:
     - name: Setup Products directory
       run: mkdir products
 
-    - name: Build ChowCentaur
-      if: contains(toJson(github.event.commits), 'ChowCentaur')
-      run: bash plugins/ChowCentaur/linux_build.sh
-
-    - name: Build ChowTape
-      if: contains(toJson(github.event.commits), 'ChowTape')
-      run: bash plugins/ChowTape/linux_build.sh
-
-    - name: Build ChowMatrix
-      if: contains(toJson(github.event.commits), 'ChowMatrix')
-      run: bash plugins/ChowMatrix/linux_build.sh
-
-    - name: Build ChowPhaser
-      if: contains(toJson(github.event.commits), 'ChowPhaser')
-      run: bash plugins/ChowPhaser/linux_build.sh
-
-    - name: Build ChowKick
-      if: contains(toJson(github.event.commits), 'ChowKick')
-      run: bash plugins/ChowKick/linux_build.sh
-
+   
     # - name: Setup debug session
     # uses: mxschmitt/action-tmate@v3
 
@@ -297,30 +203,26 @@ jobs:
       if: contains(toJson(github.event.commits), 'BYOD')
       run: bash plugins/BYOD/linux_build.sh
       env:
-        OUR_GITHUB_PAT: ${{ secrets.OUR_GITHUB_PAT }}
+        OUR_GITHUB_PAT: ${{ secrets.GIT_PAT }}
 
-    - name: Build ChowMultiTool
-      if: contains(toJson(github.event.commits), 'ChowMultiTool')
-      run: bash plugins/ChowMultiTool/linux_build.sh
+ #   - name: Deploy Nightly Builds
+ #     uses: garygrossgarten/github-action-scp@release
+ #     with:
+ #       local: products
+ #       remote: Library/Web/chowdsp/nightly_plugins
+ #       host: ccrma-gate.stanford.edu
+ #       username: jatin
+ #       password: ${{ secrets.CCRMA_PASS }}
 
-    - name: Deploy Nightly Builds
-      uses: garygrossgarten/github-action-scp@release
-      with:
-        local: products
-        remote: Library/Web/chowdsp/nightly_plugins
-        host: ccrma-gate.stanford.edu
-        username: jatin
-        password: ${{ secrets.CCRMA_PASS }}
-
-    - name: Send email notification
-      if: always()
-      uses: dawidd6/action-send-mail@v2
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: chowdsp
-        password: ${{ secrets.GMAIL_PASS }}
-        subject: "ChowDSP ${{ github.job }} completed with status: ${{ job.status }}"
-        body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
-        to: chowdsp@gmail.com
-        from: ChowDSP Nightly Release Pipeline (Linux)
+ #   - name: Send email notification
+ #     if: always()
+ #     uses: dawidd6/action-send-mail@v2
+ #     with:
+ #       server_address: smtp.gmail.com
+ #       server_port: 465
+ #       username: chowdsp
+ #       password: ${{ secrets.GMAIL_PASS }}
+ #       subject: "ChowDSP ${{ github.job }} completed with status: ${{ job.status }}"
+ #       body: "ChowDSP ${{ github.job }} has completed.\n\nRunning on commit: ${{ github.event.head_commit.message }}\nStatus: ${{ job.status }}"
+ #       to: chowdsp@gmail.com
+ #       from: ChowDSP Nightly Release Pipeline (Linux)
